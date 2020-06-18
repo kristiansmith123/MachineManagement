@@ -1,0 +1,33 @@
+﻿@model MachineManagement.Portal.UI.Models.HomeViewModel
+@{
+    ViewBag.Title = "Home";
+}
+
+    <div class="jumbotron">
+        <h2>Machines</h2>
+        @if (!Model.VirtualMachines.Any())
+        {
+            <p class="lead">No machines have been added. Please click below to add a new machine.</p>
+
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var vm in Model.VirtualMachines)
+                {
+                    <div class="col-md-4 text-center">
+                        <a href="/Machines/View/@vm.Id">
+                            <img src="~/Content/Images/server.png" class="img-responsive" />
+                            @Html.Label(vm.Name)
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        <p><a href="/Machines/Edit" class="btn btn-success btn-lg">Add +</a></p>
+
+    </div>
+
+<div class="row">
+
+</div>

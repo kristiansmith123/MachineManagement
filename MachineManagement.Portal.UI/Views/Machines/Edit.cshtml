@@ -1,0 +1,38 @@
+﻿@model MachineManagement.Portal.UI.Models.MachineViewModel
+@{
+    ViewBag.Title = Model.Id == 0 ? "Add" : "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("Edit", "Machines"))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Name, new { @class = "control-label" })
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Ip, new { @class = "control-label" })
+                @Html.TextBoxFor(m => m.Ip, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Ip, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
+                @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = "5", cols = "50" })
+                @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        }
+    </div>
+</div>

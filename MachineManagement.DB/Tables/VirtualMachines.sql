@@ -1,0 +1,7 @@
+﻿CREATE TABLE [dbo].[VirtualMachines]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Name] NVARCHAR(MAX) NOT NULL, 
+    [IP] NVARCHAR(50) NOT NULL, 
+    [Notes] NVARCHAR(MAX) NULL,
+)

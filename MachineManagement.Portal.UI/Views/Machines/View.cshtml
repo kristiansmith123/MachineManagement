@@ -1,0 +1,39 @@
+﻿@model MachineManagement.Portal.UI.Models.MachineViewModel
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            <a href="/Machines/Edit/@Model.Id" class="btn btn-default">Edit</a>
+            <a href="/Machines/Delete/@Model.Id" class="btn btn-danger">Delete</a>
+        </p>
+
+        <div class="row" style="padding-bottom:50px"></div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Connected, new { @class = "control-label" })
+            unknown
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, new { @class = "control-label" })
+            @Html.DisplayFor(m => m.Name, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Ip, new { @class = "control-label" })
+            @Html.DisplayFor(m => m.Ip, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Notes, new { @class = "control-label" })
+            @Html.DisplayFor(m => m.Notes, new { @class = "form-control" })
+        </div>
+    </div>
+</div>
+
