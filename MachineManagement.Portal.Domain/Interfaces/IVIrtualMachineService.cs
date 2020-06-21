@@ -11,5 +11,7 @@ namespace MachineManagement.Portal.Domain.Interfaces
         void Delete(VirtualMachine virtualMachine);
         Task<IEnumerable<VirtualMachine>> GetAllAsync();
         Task<VirtualMachine> GetByIdAsync(int id);
+        Task<bool> IsOnlineAsync(string ipAddress);
+        Task<bool> StartAsync(string MahcineName, string machineGroup);
     }
 }

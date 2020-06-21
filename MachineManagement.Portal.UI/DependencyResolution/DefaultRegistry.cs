@@ -17,6 +17,7 @@
 
 namespace MachineManagement.Portal.UI.DependencyResolution
 {
+    using AutoMapper;
     using MachineManagement.Portal.Domain.Entities;
     using MachineManagement.Portal.Domain.Interfaces;
     using MachineManagement.Portal.Domain.Services;
@@ -45,6 +46,7 @@ namespace MachineManagement.Portal.UI.DependencyResolution
                 .Is(ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString);
 
             For<IVirtualMachineService>().Use<VirtualMachineService>();
+            For<IMapper>().Use(() => Mapper.Instance);
         }
 
         #endregion

@@ -1,11 +1,15 @@
-﻿using MachineManagement.Portal.Domain.Entities;
+﻿using AutoMapper;
+using MachineManagement.Portal.Domain.Entities;
 using MachineManagement.Portal.Domain.Services;
 using MachineManagement.Portal.UI.Models;
+using Microsoft.Azure.Management.BatchAI.Fluent.Models;
+using Microsoft.Azure.Management.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Configuration;
 using System.Threading.Tasks;
-using System.Web;
+using System.Web.Management;
 using System.Web.Mvc;
 
 namespace MachineManagement.Portal.UI.Controllers
@@ -13,10 +17,13 @@ namespace MachineManagement.Portal.UI.Controllers
     public class MachinesController : Controller
     {
         private readonly VirtualMachineService _virtualMachineService;
+        private readonly IMapper _mapper;
+        private static readonly NLog.Logger _Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public MachinesController(VirtualMachineService virtualMachineService)
+        public MachinesController(VirtualMachineService virtualMachineService, IMapper mapper)
         {
             _virtualMachineService = virtualMachineService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -33,15 +40,7 @@ namespace MachineManagement.Portal.UI.Controllers
         [HttpGet]
         public async Task<ActionResult> View(int id)
         {
-            var entity = await _virtualMachineService.GetByIdAsync(id);
-
-            var model = new MachineViewModel
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Ip = entity.Ip,
-                Notes = entity.Notes
-            };
+            var model = _mapper.Map<VirtualMachine, MachineViewModel>(await _virtualMachineService.GetByIdAsync(id));
 
             return View(model);
         }
@@ -53,12 +52,7 @@ namespace MachineManagement.Portal.UI.Controllers
 
             if (id.HasValue)
             {
-                var entity = await _virtualMachineService.GetByIdAsync(id.Value);
-
-                model.Id = entity.Id;
-                model.Name = entity.Name;
-                model.Ip = entity.Ip;
-                model.Notes = entity.Notes;
+                model = _mapper.Map<VirtualMachine, MachineViewModel>(await _virtualMachineService.GetByIdAsync(id.Value));
             }
 
             return View(model);
@@ -74,23 +68,11 @@ namespace MachineManagement.Portal.UI.Controllers
 
             if (model.Id == 0)
             {
-                _virtualMachineService.Add(new VirtualMachine
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Ip = model.Ip,
-                    Notes = model.Notes
-                });
+                _virtualMachineService.Add(_mapper.Map<MachineViewModel, VirtualMachine>(model));
             }
             else
             {
-                _virtualMachineService.Edit(new VirtualMachine
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Ip = model.Ip,
-                    Notes = model.Notes
-                });
+                _virtualMachineService.Edit(_mapper.Map<MachineViewModel, VirtualMachine>(model));
             }
 
             return RedirectToAction("Index");
@@ -103,6 +85,53 @@ namespace MachineManagement.Portal.UI.Controllers
             _virtualMachineService.Delete(entity);
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> IsOnline(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(await _virtualMachineService.IsOnlineAsync(ipAddress), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public void ConnectToProxy(string ip, string proxyIp)
+        {
+            var t = new test();
+            t.RequestInfo("52.236.136.191", "madmin", "bi&&estofms175");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Start(string localMachineName, string remoteMachineName, string remoteMachineGroup)
+        {
+            if (string.IsNullOrEmpty(localMachineName))
+            {
+                return Json("name missing");
+            }
+
+            if (string.IsNullOrEmpty(remoteMachineName))
+            {
+                return Json("remote name missing");
+            }
+
+            if (string.IsNullOrEmpty(remoteMachineGroup))
+            {
+                return Json("group missing");
+            }
+
+            if (await _virtualMachineService.StartAsync(remoteMachineName, remoteMachineGroup))
+            {
+                if (_virtualMachineService.StartLocalMachineAsync(localMachineName))
+                {
+                    return Json("success");
+                }
+            }
+
+            return Json("error");
         }
 
     }

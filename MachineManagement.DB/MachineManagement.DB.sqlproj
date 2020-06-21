@@ -57,8 +57,14 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\VirtualMachines.sql" />
+    <Build Include="Tables\Logs.sql" />
+    <Build Include="Scripts\InsertLog.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="MachineManagement.DB.refactorlog" />
   </ItemGroup>
 </Project>

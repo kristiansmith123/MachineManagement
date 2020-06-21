@@ -2,32 +2,246 @@
 @{
     ViewBag.Title = "Home";
 }
+<script src="~/Scripts/jquery-3.4.1.js"></script>
 
-    <div class="jumbotron">
-        <h2>Machines</h2>
-        @if (!Model.VirtualMachines.Any())
-        {
-            <p class="lead">No machines have been added. Please click below to add a new machine.</p>
+<div class="jumbotron">
+    <h2 class="black ee">Machines</h2>
+    @if (!Model.VirtualMachines.Any())
+    {
+        <p class="lead">No machines have been added. Please click below to add a new machine.</p>
 
-        }
-        else
-        {
-            <div class="row">
-                @foreach (var vm in Model.VirtualMachines)
-                {
-                    <div class="col-md-4 text-center">
-                        <a href="/Machines/View/@vm.Id">
-                            <img src="~/Content/Images/server.png" class="img-responsive" />
-                            @Html.Label(vm.Name)
-                        </a>
-                    </div>
-                }
-            </div>
-        }
-        <p><a href="/Machines/Edit" class="btn btn-success btn-lg">Add +</a></p>
+    }
+    else
+    {
+        <div class="row context-menu">
+            @foreach (var vm in Model.VirtualMachines)
+            {
+                <div class="col-md-4 text-center">
+                    <a href="/Machines/View/@vm.Id" class="context-menu-one black" id="@vm.Id" data-toggle="tooltip" title="OSRS Account: @(string.IsNullOrEmpty(vm.BotUsername)? "none" : vm.BotUsername)" data-placement="bottom">
+                        <img src="~/Content/Images/server.png" class="img-responsive" id="serverimg_@vm.Id" />
+                        @Html.Label(vm.Name)
+                    </a>
+                </div>
 
-    </div>
+                <script type="text/javascript">
+
+                    (function () {
+                        $.getJSON(
+                            '/Machines/IsOnline/',
+                            {
+                                ipAddress: '@vm.Ip'
+                            },
+                            function (data) {
+                                if (data) {
+                                    $("#serverimg_@vm.Id").attr("src","/Content/Images/server_running.png");
+                                }
+                                else {
+                                    $("#serverimg_@vm.Id").attr("src","/Content/Images/server_stopped.png");
+                                }
+                            });
+                    }());
+                </script>
+            }
+        </div>
+    }
+    <p><a href="/Machines/Edit" class="btn btn-default btn-lg">Add +</a></p>
+
+</div>
 
 <div class="row">
 
 </div>
+
+@section scripts{
+    <script src="~/Scripts/jquery.contextMenu.js"></script>
+    <link href="~/Content/jquery.contextMenu.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.toast.js"></script>
+    <link href="~/Content/jquery.toast.css" rel="stylesheet" />
+    <script type="text/javascript">
+        var vms = [
+
+                    @foreach (var vm in Model.VirtualMachines)
+                    {
+                        if (Model.VirtualMachines.Last().Id == vm.Id)
+                        {
+                            @Html.Raw($"[{vm.Id},'{vm.Name}','{vm.Ip}','{vm.ProxyIP}','{vm.ProxyName}','{vm.ProxyResourceGroup}']")
+                        }
+                        else
+                        {
+                            @Html.Raw($"[{vm.Id},'{vm.Name}','{vm.Ip}','{vm.ProxyIP}','{vm.ProxyName}','{vm.ProxyResourceGroup}'],")
+                        }
+                    }
+            ];
+
+        $(function () {
+            $("[data-toggle=tooltip").tooltip();
+
+            function toastInfoMessage(heading, msg) {
+                $.toast({
+                                heading: heading,
+                                text: msg,
+                                icon: 'info',
+                                loader: true,
+                                loaderBg: '#9EC600',
+                                position: 'top-right',
+                                bgColor: '#212121',
+                                textColor: 'white',
+                                hideAfter: 5000
+                            });
+            }
+
+            function toastWarningMessage(heading, msg) {
+                $.toast({
+                                heading: heading,
+                                text: msg,
+                                icon: 'warning',
+                                loader: true,
+                                loaderBg: '#9EC600',
+                                position: 'top-right',
+                                bgColor: '#212121',
+                                textColor: 'white',
+                                loaderBg: '#ff9d00',
+                                hideAfter: 5000
+                            });
+            }
+
+            function toastErrorMessage(heading, msg) {
+                $.toast({
+                                heading: heading,
+                                text: msg,
+                                icon: 'warning',
+                                loader: true,
+                                loaderBg: '#9EC600',
+                                position: 'top-right',
+                                bgColor: '#212121',
+                                textColor: 'white',
+                                loaderBg: '#ff0000',
+                                hideAfter: 5000
+                            });
+            }
+
+            function toastSuccessMessage(heading, msg) {
+                $.toast({
+                                heading: heading,
+                                text: msg,
+                                icon: 'success',
+                                loader: true,
+                                loaderBg: '#9EC600',
+                                position: 'top-right',
+                                bgColor: '#212121',
+                                textColor: 'white',
+                                hideAfter: 5000
+                            });
+            }
+
+            $(".ee").on('click', function (evt) {
+                if (evt.detail === 10) {
+                    window.location.replace("/EE/Index");
+                }
+            });
+
+            $('.context-menu').contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                },
+                items: {
+                    "start": {
+                        name: "Start",
+                        icon: "fa-play",
+                        callback: function (itemKey, opt, e) {
+                            var id = opt.$trigger.attr("id");
+                            var name = vms.find(element => element[0] == id)[1];
+                            var ip = vms.find(element => element[0] == id)[2];
+                            var proxyIp = vms.find(element => element[0] == id)[3];
+                            var proxyName = vms.find(element => element[0] == id)[4];
+                            var proxyResGroup = vms.find(element => element[0] == id)[5];
+
+                            toastInfoMessage('Starting ' + name, 'Starting virtual machine ' + name + '. This may take a while.');
+
+                            $.ajax({
+                            type: 'POST',
+                                url: '/Machines/Start',
+                                data: '{"localMachineName":"' + name + '", "remoteMachineName":"' + proxyName + '", "remoteMachineGroup":"' + proxyResGroup + '"}', // or JSON.stringify ({name: 'jonas'}),
+                                success: function (data) {
+                                    if (data === "success") {
+                                        toastInfoMessage("Successfully started " + name + "and " + proxyName + ".");
+                                    }
+                                    if (data === "name missing") {
+                                        toastWarningMessage("Could not start local machine. No name specified.");
+                                    }
+                                    if (data === "remote name missing") {
+                                        toastWarningMessage("Could not start proxy machine. No name specified.");
+                                    }
+                                    if (data === "group missing") {
+                                        toastWarningMessage("Could not start proxy" + name + ". No machine group specified.");
+                                    }
+                                    if (data === "error") {
+                                        toastErrorMessage("Request to start " + name + " & " + proxyName + " failed.");
+                                    }
+                                },
+                                error: function (data) {
+                                        toastWarningMessage("Request to start " + name + " failed.");
+                                },
+                            contentType: "application/json",
+                            dataType: 'json'
+                        });
+                        }
+                    },
+                    "stop": {
+                        name: "Stop",
+                        icon: "fa-stop",
+                        callback: function (itemKey, opt, e) {
+                            var id = opt.$trigger.attr("id");
+                            var name = vms.find(element => element[0] == id)[1];
+
+                            toastInfoMessage('Stopping ' + name, 'Stopping virtual machine ' + name + '. This may take a while.');
+
+
+                        }
+                    },
+                    "connect": {
+                        name: "Connect to Proxy",
+                        icon: "fa-lock",
+                        callback: function (itemKey, opt, e) {
+                            var id = opt.$trigger.attr("id");
+                            var name = vms.find(element => element[0] == id)[1];
+                            var ip = vms.find(element => element[0] == id)[2];
+                            var proxyIp = vms.find(element => element[0] == id)[3];
+
+                            toastInfoMessage('Connecting ' + name + ' to Proxy', 'Connecting ' + name + ' to proxy ' + proxyIp + '.');
+
+
+
+
+                            $.ajax({
+                            type: 'POST',
+                                url: '/Machines/ConnectToProxy',
+                                data: '{"ip":"' + ip + '", "proxyIp":"' + proxyIp + '"}', // or JSON.stringify ({name: 'jonas'}),
+                            success: function(data) { alert('success'); },
+                            contentType: "application/json",
+                            dataType: 'json'
+                        });
+                        }
+                    },
+                    "disconnect": {
+                        name: "Disconnect from Proxy",
+                        icon: "fa-unlock",
+                        callback: function (itemKey, opt, e) {
+                            var id = opt.$trigger.attr("id");
+                            var name = vms.find(element => element[0] == id)[1];
+                            var ip = vms.find(element => element[0] == id)[2];
+
+                            toastInfoMessage('Disconnecting ' + name + ' from Proxy', 'Disconnecting ' + name + ' from proxy. Outgoing IP will be ' + ip + '.');
+
+
+                        }
+                    },
+                    //"cut": { name: "Cut", icon: "cut" },
+                    "sep1": "---------",
+                    "quit": { name: "Quit", icon: "fa-times" }
+                }
+            });
+        });
+    </script>
+}

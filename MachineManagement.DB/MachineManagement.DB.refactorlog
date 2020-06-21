@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="546e2d6d-1b99-4625-b70a-c70a9a293a5e" ChangeDateTime="06/21/2020 00:56:54">
+    <Property Name="ElementName" Value="[dbo].[Log].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LogId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2083b9ea-5869-4d9d-ae46-451e15f34715" ChangeDateTime="06/21/2020 00:56:57">
+    <Property Name="ElementName" Value="[dbo].[Log].[Application]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Level" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="581e1117-5151-4039-a377-68667a110edb" ChangeDateTime="06/21/2020 00:57:00">
+    <Property Name="ElementName" Value="[dbo].[Log].[Logged]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CallSite" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4c691a48-5dc1-44a4-a3d2-e9a923f02f2b" ChangeDateTime="06/21/2020 00:57:12">
+    <Property Name="ElementName" Value="[dbo].[Log].[Logger]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StackTrace" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1d1dbdc-26f2-47cd-acdb-d6583259ddb5" ChangeDateTime="06/21/2020 00:57:18">
+    <Property Name="ElementName" Value="[dbo].[Log].[Exception]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AdditionalInfo" />
+  </Operation>
+</Operations>

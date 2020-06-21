@@ -1,5 +1,7 @@
 ﻿using MachineManagement.Portal.Domain.Entities;
+using MachineManagement.Portal.Domain.Services;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MachineManagement.Portal.UI.Models
 {
