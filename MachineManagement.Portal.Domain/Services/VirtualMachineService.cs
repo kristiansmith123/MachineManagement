@@ -74,7 +74,7 @@ namespace MachineManagement.Portal.Domain.Services
             return pingable;
         }
 
-        public async Task<bool> StartAsync(string machineName, string machineGroup)
+        public async Task<bool> ControlPowerRemoteAsync(string machineName, string machineGroup, string action)
         {
             var credentials = SdkContext.AzureCredentialsFactory.FromFile(ConfigurationManager.AppSettings["AzureAuth"]);
 
@@ -85,9 +85,19 @@ namespace MachineManagement.Portal.Domain.Services
                 .WithDefaultSubscription();
             try
             {
-                _Logger.Info(string.Format("Starting VM {0} in group {0}", machineName, machineGroup));
+                _Logger.Info($"{action}ing VM {machineName} in group {machineGroup}.");
 
-                await azure.VirtualMachines.StartAsync(machineGroup, machineName);
+                if(action == "start")
+                {
+                    await azure.VirtualMachines.StartAsync(machineGroup, machineName);
+                }
+
+                if (action == "stop")
+                {
+                    await azure.VirtualMachines.PowerOffAsync(machineGroup, machineName);
+
+                }
+
                 return true;
             }
             catch (Exception e)
@@ -95,10 +105,10 @@ namespace MachineManagement.Portal.Domain.Services
                 _Logger.Error(e);
                 return false;
             }
-        }
+        }        
 
         //USER MUST BE MEMBER OF HYPERV ADMINISTRATORS GROUP
-        public bool StartLocalMachineAsync(string machineName)
+        public bool ControlPowerLocal(string machineName, string command)
         {
             try
             {
@@ -115,11 +125,18 @@ namespace MachineManagement.Portal.Domain.Services
                     {
                         var inParams = vm.GetMethodParameters("RequestStateChange");
 
-                        inParams["RequestedState"] = 2; //Start
+                        if (command == "start")
+                        {
+                            inParams["RequestedState"] = 2; //Running
+                        }
+                        if(command == "stop")
+                        {
+                            inParams["RequestedState"] = 3; //Disabled
+                        }
                         var result = vm.InvokeMethod("RequestStateChange", inParams, null);
 
-                        //Success or already running
-                        if ((UInt32)result["ReturnValue"] == 0 || (UInt32)result["ReturnValue"] == 32775)
+                        //Success or already in requested state or transitioning to requested state
+                        if ((UInt32)result["ReturnValue"] == 0 || (UInt32)result["ReturnValue"] == 32775 || (UInt32)result["ReturnValue"] == 32775)
                         {
                             return true;
                         }
@@ -129,30 +146,8 @@ namespace MachineManagement.Portal.Domain.Services
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
 
-            }
-
-            return true;
-        }
-
-        public async Task<bool> StopAsync(string machineName, string machineGroup)
-        {
-            var credentials = SdkContext.AzureCredentialsFactory.FromFile(ConfigurationManager.AppSettings["AzureAuth"]);
-
-            var azure = Azure
-                .Configure()
-                .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
-                .Authenticate(credentials)
-                .WithDefaultSubscription();
-            try
-            {
-                _Logger.Info(string.Format("Stopping VM {0} in group {0}", machineName, machineGroup));
-
-                await azure.VirtualMachines.PowerOffAsync(machineGroup, machineName);
-                return true;
+                return false;
             }
             catch (Exception e)
             {

@@ -106,7 +106,7 @@ namespace MachineManagement.Portal.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Start(string localMachineName, string remoteMachineName, string remoteMachineGroup)
+        public async Task<ActionResult> ControlPower(string localMachineName, string remoteMachineName, string remoteMachineGroup, string action)
         {
             if (string.IsNullOrEmpty(localMachineName))
             {
@@ -123,9 +123,19 @@ namespace MachineManagement.Portal.UI.Controllers
                 return Json("group missing");
             }
 
-            if (await _virtualMachineService.StartAsync(remoteMachineName, remoteMachineGroup))
+            if (string.IsNullOrEmpty(action))
             {
-                if (_virtualMachineService.StartLocalMachineAsync(localMachineName))
+                return Json("action missing");
+            }
+
+            if (action != "start" && action != "stop")
+            {
+                return Json("action wrong");
+            }
+
+            if (await _virtualMachineService.ControlPowerRemoteAsync(remoteMachineName, remoteMachineGroup, action))
+            {
+                if (_virtualMachineService.ControlPowerLocal(localMachineName, action))
                 {
                     return Json("success");
                 }

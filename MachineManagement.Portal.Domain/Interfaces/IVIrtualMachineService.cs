@@ -12,6 +12,7 @@ namespace MachineManagement.Portal.Domain.Interfaces
         Task<IEnumerable<VirtualMachine>> GetAllAsync();
         Task<VirtualMachine> GetByIdAsync(int id);
         Task<bool> IsOnlineAsync(string ipAddress);
-        Task<bool> StartAsync(string MahcineName, string machineGroup);
+        Task<bool> ControlPowerRemoteAsync(string machineName, string machineGroup, string action);
+        bool ControlPowerLocal(string machineName, string command);
     }
 }
