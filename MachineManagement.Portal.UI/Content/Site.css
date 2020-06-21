@@ -25,6 +25,10 @@ textarea {
     max-width: 280px;
 }
 
-.black{
+.black {
     color: #000000;
+}
+
+.italic {
+    font-style: italic !important;
 }

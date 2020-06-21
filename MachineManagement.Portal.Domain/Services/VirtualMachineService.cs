@@ -136,7 +136,7 @@ namespace MachineManagement.Portal.Domain.Services
                         var result = vm.InvokeMethod("RequestStateChange", inParams, null);
 
                         //Success or already in requested state or transitioning to requested state
-                        if ((UInt32)result["ReturnValue"] == 0 || (UInt32)result["ReturnValue"] == 32775 || (UInt32)result["ReturnValue"] == 32775)
+                        if ((UInt32)result["ReturnValue"] == 0 || (UInt32)result["ReturnValue"] == 32775 || (UInt32)result["ReturnValue"] == 4096)
                         {
                             return true;
                         }

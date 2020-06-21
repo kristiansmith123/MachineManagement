@@ -147,7 +147,7 @@
                 },
                 items: {
                     "start": {
-                        name: "Start",
+                        name: "Start Local and Remote Machines",
                         icon: "fa-play",
                         callback: function (itemKey, opt, e) {
                             var id = opt.$trigger.attr("id");
@@ -155,7 +155,7 @@
                             var proxyName = vms.find(element => element[0] == id)[4];
                             var proxyResGroup = vms.find(element => element[0] == id)[5];
 
-                            toastInfoMessage('Starting ' + name, 'Starting virtual machine ' + name + '. This may take a while.');
+                            toastInfoMessage("Starting Machines", "Starting machines " + name + " & " + proxyName + ". This may take a while.");
 
                             $.ajax({
                             type: 'POST',
@@ -163,23 +163,26 @@
                                 data: '{"localMachineName":"' + name + '", "remoteMachineName":"' + proxyName + '", "remoteMachineGroup":"' + proxyResGroup + '", "action":"start"}', // or JSON.stringify ({name: 'jonas'}),
                                 success: function (data) {
                                     if (data === "success") {
-                                        toastSuccessMessage("Successfully started " + name + " & " + proxyName + ".");
+                                        toastSuccessMessage("Machines Started", "Successfully started " + name + " & " + proxyName + ".");
                                     }
                                     if (data === "name missing") {
-                                        toastWarningMessage("Could not start local machine. No name specified.");
+                                        toastWarningMessage("Problem Starting Machine", "Could not start local machine. No name specified.");
                                     }
                                     if (data === "remote name missing") {
-                                        toastWarningMessage("Could not start proxy machine. No name specified.");
+                                        toastWarningMessage("Problem Starting Machine", "Could not start proxy machine. No name specified.");
                                     }
                                     if (data === "group missing") {
-                                        toastWarningMessage("Could not start proxy" + name + ". No machine group specified.");
+                                        toastWarningMessage("Problem Starting Machine", "Could not start proxy" + name + ". No machine group specified.");
                                     }
-                                    if (data === "error") {
-                                        toastErrorMessage("Request to start " + name + " & " + proxyName + " failed.");
+                                    if (data === "error local") {
+                                        toastErrorMessage("Error Starting Local Machine", "Request to start " + name + " failed.");
+                                    }
+                                    if (data === "error remote") {
+                                        toastErrorMessage("Error Starting Remote Machine", "Request to start " + proxyName + " failed.");
                                     }
                                 },
                                 error: function (data) {
-                                    toastErrorMessage("Request to stop " + name + " & " + proxyName + " failed.");
+                                    toastErrorMessage("Error Starting Machine", "Request to stop " + name + " & " + proxyName + " failed.");
                                 },
                             contentType: "application/json",
                             dataType: 'json'
@@ -187,7 +190,7 @@
                         }
                     },
                     "stop": {
-                        name: "Stop",
+                        name: "Stop Local and Remote Machines",
                         icon: "fa-stop",
                         callback: function (itemKey, opt, e) {
                             var id = opt.$trigger.attr("id");
@@ -195,7 +198,7 @@
                             var proxyName = vms.find(element => element[0] == id)[4];
                             var proxyResGroup = vms.find(element => element[0] == id)[5];
 
-                            toastInfoMessage('Stopping ' + name, 'Stopping virtual machine ' + name + '. This may take a while.');
+                            toastInfoMessage("Stopping Machines", "Stopping machines " + name + " & " + proxyName + ". This may take a while.");
 
                              $.ajax({
                             type: 'POST',
@@ -203,64 +206,30 @@
                                 data: '{"localMachineName":"' + name + '", "remoteMachineName":"' + proxyName + '", "remoteMachineGroup":"' + proxyResGroup + '", "action":"stop"}', // or JSON.stringify ({name: 'jonas'}),
                                 success: function (data) {
                                     if (data === "success") {
-                                        toastSuccessMessage("Successfully stopped " + name + " & " + proxyName + ".");
+                                        toastSuccessMessage("Machines Stopped", "Successfully stopped " + name + " & " + proxyName + ".");
                                     }
                                     if (data === "name missing") {
-                                        toastWarningMessage("Could not stop local machine. No name specified.");
+                                        toastWarningMessage("Problem Stopping Machine", "Could not stop local machine. No name specified.");
                                     }
                                     if (data === "remote name missing") {
-                                        toastWarningMessage("Could not stop proxy machine. No name specified.");
+                                        toastWarningMessage("Problem Stopping Machine", "Could not stop proxy machine. No name specified.");
                                     }
                                     if (data === "group missing") {
-                                        toastWarningMessage("Could not stop proxy" + name + ". No machine group specified.");
+                                        toastWarningMessage("Problem Stopping Machine", "Could not stop proxy" + name + ". No machine group specified.");
                                     }
-                                    if (data === "error") {
-                                        toastErrorMessage("Request to stop " + name + " & " + proxyName + " failed.");
+                                    if (data === "error local") {
+                                        toastErrorMessage("Error Stopping Local Machine", "Request to stop " + name + " failed.");
+                                    }
+                                    if (data === "error remote") {
+                                        toastErrorMessage("Error Stopping Remote Machine", "Request to stop " + proxyName + " failed.");
                                     }
                                 },
                                 error: function (data) {
-                                    toastErrorMessage("Request to stop " + name + " & " + proxyName + " failed.");
+                                    toastErrorMessage("Error Stopping Remote Machine", "Request to stop " + name + " & " + proxyName + " failed.");
                                 },
                             contentType: "application/json",
                             dataType: 'json'
                         });
-                        }
-                    },
-                    "connect": {
-                        name: "Connect to Proxy",
-                        icon: "fa-lock",
-                        callback: function (itemKey, opt, e) {
-                            var id = opt.$trigger.attr("id");
-                            var name = vms.find(element => element[0] == id)[1];
-                            var ip = vms.find(element => element[0] == id)[2];
-                            var proxyIp = vms.find(element => element[0] == id)[3];
-
-                            toastInfoMessage('Connecting ' + name + ' to Proxy', 'Connecting ' + name + ' to proxy ' + proxyIp + '.');
-
-
-
-
-                            $.ajax({
-                            type: 'POST',
-                                url: '/Machines/ConnectToProxy',
-                                data: '{"ip":"' + ip + '", "proxyIp":"' + proxyIp + '"}', // or JSON.stringify ({name: 'jonas'}),
-                            success: function(data) { alert('success'); },
-                            contentType: "application/json",
-                            dataType: 'json'
-                        });
-                        }
-                    },
-                    "disconnect": {
-                        name: "Disconnect from Proxy",
-                        icon: "fa-unlock",
-                        callback: function (itemKey, opt, e) {
-                            var id = opt.$trigger.attr("id");
-                            var name = vms.find(element => element[0] == id)[1];
-                            var ip = vms.find(element => element[0] == id)[2];
-
-                            toastInfoMessage('Disconnecting ' + name + ' from Proxy', 'Disconnecting ' + name + ' from proxy. Outgoing IP will be ' + ip + '.');
-
-
                         }
                     },
                     //"cut": { name: "Cut", icon: "cut" },

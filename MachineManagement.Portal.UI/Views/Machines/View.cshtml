@@ -13,7 +13,8 @@
             <a href="/Machines/Delete/@Model.Id" class="btn btn-danger">Delete</a>
         </p>
 
-        <div class="row" style="padding-bottom:50px"></div>
+        <div class="row" style="padding-bottom:20px"></div>
+        <h3>Local Machine</h3>
 
         <div class="form-group">
             @Html.Label("Status", new { @class = "control-label" })
@@ -45,6 +46,9 @@
             @Html.DisplayFor(m => m.ProxyIP, new { @class = "form-control" })
         </div>
 
+        <div class="row" style="padding-bottom:20px"></div>
+        <h3>Remote Machine</h3>
+
         <div class="form-group">
             @Html.LabelFor(m => m.ProxyName, new { @class = "control-label" })
             @Html.DisplayFor(m => m.ProxyName, new { @class = "form-control" })
@@ -69,6 +73,9 @@
             @Html.LabelFor(m => m.BotUsername, new { @class = "control-label" })
             @Html.DisplayFor(m => m.BotUsername, new { @class = "form-control" })
         </div>
+
+        <div class="row" style="padding-bottom:20px"></div>
+        <h3>Botting</h3>
 
         <div class="form-group">
             @Html.LabelFor(m => m.BotPassword, new { @class = "control-label" })

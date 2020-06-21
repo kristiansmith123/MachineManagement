@@ -139,9 +139,16 @@ namespace MachineManagement.Portal.UI.Controllers
                 {
                     return Json("success");
                 }
+                else
+                {
+                    return Json("error local");
+                }
+            }
+            else
+            {
+                return Json("error remote");
             }
 
-            return Json("error");
         }
 
     }
